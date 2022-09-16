@@ -41,7 +41,7 @@ export class TaskService {
       return { task: result[0].tasks[0] };
     } catch (error) {
       await closeConnection();
-      return error;
+      return { error: "There is an error getting the task, try again later" };
     }
   }
   async createTask(task: Task, user_id: string) {
@@ -63,9 +63,10 @@ export class TaskService {
       };
       await userCollection.updateOne({ _id: user?._id }, insertTask);
       await closeConnection();
+      return { message: "Task created" };
     } catch (error) {
       await closeConnection();
-      return error;
+      return { error: "There is an error creating a task, try again later" };
     }
   }
   async updateTask(user_id: string, task: any) {
@@ -85,7 +86,7 @@ export class TaskService {
       await userCollection.updateOne(
         {
           _id: new ObjectId(user_id),
-          "tasks._id": new ObjectId(task._id)
+          "tasks._id": new ObjectId(task._id),
         },
         {
           $set: {
@@ -99,7 +100,7 @@ export class TaskService {
       return { message: "Task updated" };
     } catch (error) {
       await closeConnection();
-      return error;
+      return { error: "There is an error updating the task, try again later" };
     }
   }
   async deleteTask(user_id: string, id: string) {
@@ -109,7 +110,7 @@ export class TaskService {
 
       //If task wasn't found, we let the user know that there is no task with that ID
       if (search.error) {
-        return { message: search.error };
+        return search;
       }
 
       //If task was found, we proceed to remove it
@@ -124,7 +125,7 @@ export class TaskService {
       return { message: "Task deleted" };
     } catch (error) {
       await closeConnection();
-      return error;
+      return { error: "There is an error deleting the task, try again later" };
     }
   }
 }
