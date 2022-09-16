@@ -24,7 +24,9 @@ userRouter
   .post("/", signUp, async (req: Request, res: Response) => {
     try {
       let response = await userService.createUser(req.body);
-      res.status(201).send(response);
+      response.error
+        ? res.status(400).send(response)
+        : res.status(200).send(response);
     } catch (error) {
       res.status(400).send(error);
     }
@@ -32,7 +34,9 @@ userRouter
   .put("/", authenticateToken, async (req: Request, res: Response) => {
     try {
       let response = await userService.updateUser(res.locals.id, req.body);
-      res.status(200).send(response);
+      response.error
+        ? res.status(400).send(response)
+        : res.status(200).send(response);
     } catch (error) {
       res.status(400).send(error);
     }
