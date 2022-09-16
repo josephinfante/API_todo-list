@@ -18,7 +18,7 @@ export const collection = async () => {
                 }
                 return console.log(err)
             }
-            if(res) { console.log(res); return}
+            if(res) { console.log('Collection created'); return}
         })
     } catch {
         await client.close()
