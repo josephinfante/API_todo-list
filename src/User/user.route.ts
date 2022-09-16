@@ -1,35 +1,63 @@
 import { Router, Request, Response, NextFunction } from "express";
 import { UserService } from "./user.service";
-import { signUp } from './user.middleware'
+import { authenticateToken, signUp } from "./user.middleware";
 
 const userRouter = Router();
 const userService = new UserService();
 
 userRouter
-  .get("/:id", async (req: Request, res: Response, next: NextFunction) => {
-    try {
-      let user = await userService.getUser(req.params.id);
-      user.error ? res.status(400).send(user) : res.status(200).send(user);
-      next();
-    } catch (error) {
-      res.status(400).send(error);
+  .get(
+    "/",
+    authenticateToken,
+    async (_req: Request, res: Response, next: NextFunction) => {
+      try {
+        let response = await userService.getUser(res.locals.id);
+        response.error
+          ? res.status(400).send(response)
+          : res.status(200).send(response);
+        next();
+      } catch (error) {
+        res.status(400).send(error);
+      }
     }
-  })
+  )
   .post("/", signUp, async (req: Request, res: Response) => {
     try {
-      let user = await userService.createUser(req.body);
-      res.status(201).send(user);
+      let response = await userService.createUser(req.body);
+      res.status(201).send(response);
     } catch (error) {
       res.status(400).send(error);
     }
   })
-  .put("/:id", (req: Request, res: Response) => {
-    console.log(req.params, req.body);
-    res.status(200).json({ message: "Updating a user" });
+  .put("/", authenticateToken, async (req: Request, res: Response) => {
+    try {
+      let response = await userService.updateUser(res.locals.id, req.body);
+      res.status(200).send(response);
+    } catch (error) {
+      res.status(400).send(error);
+    }
   })
-  .delete("/:id", (req: Request, res: Response) => {
+  .delete("/", authenticateToken, async (req: Request, res: Response) => {
+    try {
+      let response = await userService.deleteUser(res.locals.id);
+      response.error
+        ? res.status(400).send(response)
+        : res.status(200).send(response);
+    } catch (error) {
+      res.status(400).send(error);
+    }
     console.log(req.params);
     res.status(200).json({ message: "User deleted" });
+  })
+  .post("/login", async (req: Request, res: Response) => {
+    try {
+      let response = await userService.login(req.body);
+      response.error
+        ? res.status(400).send(response)
+        : res.status(200).send(response);
+    } catch (error) {
+      res.status(400).send(error);
+    }
   });
 
 export default userRouter;
