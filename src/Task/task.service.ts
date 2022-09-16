@@ -50,6 +50,7 @@ export class TaskService {
       let db: Db = await database();
       let userCollection: Collection = db.collection("User");
       let user = await userCollection.findOne({ _id: new ObjectId(user_id) });
+      if (user === null || user === undefined) { await closeConnection(); return ({ error: "User don't exist, the task can't get created"})}
       let insertTask = {
         $push: {
           tasks: {
@@ -69,14 +70,15 @@ export class TaskService {
       return { error: "There is an error creating a task, try again later" };
     }
   }
-  async updateTask(user_id: string, task: any) {
+  async updateTask(user_id: string, id: string, task: Task) {
     try {
+      
       // search for the task ID to remove it
-      let search: any = await this.getTask(String(task._id));
+      let search = await this.getTask(id);
 
       //If task wasn't found, we let the user know that there is no task with that ID
       if (search.error) {
-        return { message: search.error };
+        return search ;
       }
 
       //If task was found, we update the task
@@ -86,7 +88,7 @@ export class TaskService {
       await userCollection.updateOne(
         {
           _id: new ObjectId(user_id),
-          "tasks._id": new ObjectId(task._id),
+          "tasks._id": new ObjectId(id),
         },
         {
           $set: {
