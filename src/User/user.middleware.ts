@@ -5,6 +5,8 @@ import {
   database,
   openConnection,
 } from "../utils/connection.utils";
+import jwt, { VerifyErrors } from 'jsonwebtoken'
+import 'dotenv/config'
 
 export const signUp = async (
   req: Request,
@@ -50,3 +52,19 @@ export const signUp = async (
     next();
   }
 };
+
+export const authenticateToken = async (req: Request, res: Response, next: NextFunction) => {
+  let authHeader = req.headers.authorization
+  let token = authHeader ? authHeader : null
+  if (token === null) { res.status(401).json({ error: "No token was provided"}); return}
+  try {
+    let verifiedToken = jwt.verify(token, process.env.JWT_TOKEN ? process.env.JWT_TOKEN : '1234')
+    res.locals.id = verifiedToken;
+    next()
+  } catch (error: VerifyErrors | any) {
+    if (error.name === 'JsonWebTokenError') {
+      error.message === 'invalid token' ? res.status(403).json({ error: "Token is not valid"}) : res.status(400).send()
+      return
+    }
+  }
+}
