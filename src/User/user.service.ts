@@ -54,6 +54,15 @@ export class UserService {
   }
   async updateUser(id: string, user: User) {
     try {
+      //check if the user ID exists
+      let search = await this.getUser(id);
+
+      //If user with that ID don't exists, we return an error
+      if (search.error) {
+        return search;
+      }
+
+      //If user was found, we proceed by updating the user
       await openConnection();
       let db: Db = await database();
       let userCollection: Collection = db.collection("User");
@@ -105,7 +114,7 @@ export class UserService {
       let result = await userCollection.find({ email: login.email }).toArray();
       await closeConnection();
       //send error status if user with that email don't exist
-      if (result[0].length === 0) {
+      if (result.length === 0) {
         return { error: "There isn't an account with that email" };
       }
 
