@@ -12,7 +12,7 @@ taskRouter
     async (req: Request, res: Response, next: NextFunction) => {
       try {
         let response = await taskService.getTask(req.params.id);
-        res.status(200).send(response);
+        response.error? res.status(400).send(response) : res.status(200).send(response);
       } catch (error) {
         res.status(400).send(error);
       }
@@ -22,15 +22,15 @@ taskRouter
   .post("/", authenticateToken, async (req: Request, res: Response) => {
     try {
       let response = await taskService.createTask(req.body, res.locals.id);
-      res.status(201).send(response);
+      response.error? res.status(400).send(response) : res.status(200).send(response);
     } catch (error) {
       res.status(400).send(error);
     }
   })
-  .put("/", authenticateToken, async (req: Request, res: Response) => {
+  .put("/:id", authenticateToken, async (req: Request, res: Response) => {
     try {
-      let response = await taskService.updateTask(res.locals.id, req.body);
-      res.status(200).send(response);
+      let response:any = await taskService.updateTask(res.locals.id, req.params.id, req.body);
+      response.error ? res.status(400).send(response) : res.status(200).send(response);
     } catch (error) {
       res.status(400).send(error);
     }
@@ -38,7 +38,7 @@ taskRouter
   .delete("/:id", authenticateToken, async (req: Request, res: Response) => {
     try {
       let response = await taskService.deleteTask(res.locals.id, req.params.id);
-      res.status(200).send(response);
+      response.error? res.status(400).send(response) : res.status(200).send(response);
     } catch (error) {
       res.status(400).send(error);
     }
