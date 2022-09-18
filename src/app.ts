@@ -2,6 +2,7 @@ import express, { Application } from "express";
 import "dotenv/config";
 import taskRouter from "./Task/task.route";
 import userRouter from "./User/user.route";
+import appRouter from "./app.router";
 
 export class App {
   app: Application;
@@ -23,6 +24,7 @@ export class App {
   }
 
   routes() {
+    this.app.use("/", appRouter)
     this.app.use("/task", taskRouter);
     this.app.use("/user", userRouter);
   }
