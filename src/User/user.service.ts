@@ -45,8 +45,13 @@ export class UserService {
         tasks: [],
       };
       await userCollection.insertOne(newUser);
+      let result = await userCollection.find({ email: user.email }).toArray();
       await closeConnection();
-      return { message: "User account created" };
+      let token = jwt.sign(
+        result[0]._id.toString(),
+        process.env.JWT_TOKEN ? process.env.JWT_TOKEN : "1234"
+      );
+      return { token: token };
     } catch (error) {
       await closeConnection();
       return { error: "There is an error creating a user, try again later" };
