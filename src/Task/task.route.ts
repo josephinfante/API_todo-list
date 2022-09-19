@@ -19,6 +19,14 @@ taskRouter
       next();
     }
   )
+  .get("/", authenticateToken, async (_req: Request, res: Response) => {
+    try {
+      let response = await taskService.getAllTasks(res.locals.id)
+      response.error? res.status(400).send(response) : res.status(200).send(response);
+    } catch (error) {
+      res.status(400).send(error);
+    }
+  })
   .post("/", authenticateToken, async (req: Request, res: Response) => {
     try {
       let response = await taskService.createTask(req.body, res.locals.id);
