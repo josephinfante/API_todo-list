@@ -44,6 +44,25 @@ export class TaskService {
       return { error: "There is an error getting the task, try again later" };
     }
   }
+  async getAllTasks(user_id: string) {
+    try {
+      await openConnection();
+      let db: Db = await database();
+      let userCollection = db.collection<User>("User");
+      let result = await userCollection
+        .find()
+        .project({ _id: new ObjectId(user_id), tasks: 1 })
+        .toArray();
+      await closeConnection();
+      if (result[0]) {
+        return result[0].tasks;
+      }
+      return { error: `User with ID ${user_id} has no tasks` };
+    } catch (error) {
+      await closeConnection();
+      return { error: "There is an error getting all the tasks, try again later" };
+    }
+  }
   async createTask(task: Task, user_id: string) {
     try {
       await openConnection();
