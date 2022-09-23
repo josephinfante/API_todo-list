@@ -16,8 +16,8 @@ export class UserService {
       let db: Db = await database();
       let userCollection: Collection = db.collection("User");
       let result = await userCollection
-        .find()
-        .project({ _id: new ObjectId(id), name: 1, lastname: 1, email: 1 })
+        .find({ _id: new ObjectId(id)})
+        .project({ _id: 1, name: 1, lastname: 1, email: 1 })
         .toArray();
       await closeConnection();
       if (result[0]) {
