@@ -50,7 +50,7 @@ export class TaskService {
       let db: Db = await database();
       let userCollection = db.collection<User>("User");
       let result = await userCollection
-        .find()
+        .find({ _id: new ObjectId(user_id) })
         .project({ _id: new ObjectId(user_id), tasks: 1 })
         .toArray();
       await closeConnection();
