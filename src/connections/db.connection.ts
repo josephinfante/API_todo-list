@@ -8,7 +8,7 @@ export const Connection = async () => {
     try {
         // Connect the client to the server
         await client.connect();
-        console.log(`Connected successfully to server: ${URI}`)
+        console.log(`Connected successfully to server`);
         // Establish and verify connection
         const db: Db = client.db(process.env.DB_NAME);
         console.log(`Connected to database: ${db.databaseName}`)
