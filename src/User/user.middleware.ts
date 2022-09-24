@@ -20,13 +20,13 @@ export const signUp = async (
     !req.body.password
   ) {
     !req.body.name
-      ? res.status(400).json({ Error_name: "Name can't be blank" })
+      ? res.status(400).json({ error: "Name can't be blank" })
       : !req.body.lastname
-      ? res.status(400).json({ Error_lastname: "Lastname can't be blank" })
+      ? res.status(400).json({ error: "Lastname can't be blank" })
       : !req.body.email
-      ? res.status(400).json({ Error_email: "Email can't be blank" })
+      ? res.status(400).json({ error: "Email can't be blank" })
       : !req.body.password
-      ? res.status(400).json({ Error_password: "Password can't be blank" })
+      ? res.status(400).json({ error: "Password can't be blank" })
       : null;
     return;
   }
@@ -46,7 +46,7 @@ export const signUp = async (
 
     //If email is being used, throwing an error to change the email
     if (result.length === 1) {
-      res.status(400).json({ Error_email: "Email is already being used" });
+      res.status(400).json({ error: "Email is already being used" });
       return;
     }
     next();
