@@ -149,4 +149,22 @@ export class TaskService {
       return { error: "There is an error deleting the task, try again later" };
     }
   }
+  async completeTask(user_id: string, id: string) {
+    try {
+      let response = await this.deleteTask(user_id, id);
+      if (!response.message) { return { error: "There is an error completing the task, try again later" };}
+      await openConnection();
+      let db: Db = await database();
+      let userCollection: Collection = db.collection("User");
+      await userCollection.updateOne(
+        { _id: new ObjectId(user_id) },
+        { $inc: { completed_tasks: 1 } }
+      );
+      await closeConnection();
+      return { message: "Task completed" };
+    } catch (error) {
+      await closeConnection();
+      return { error: "There is an error deleting the task, try again later" };
+    }
+  }
 }
