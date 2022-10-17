@@ -17,7 +17,7 @@ export class UserService {
       let userCollection: Collection = db.collection("User");
       let result = await userCollection
         .find({ _id: new ObjectId(id)})
-        .project({ _id: 1, name: 1, lastname: 1, email: 1 })
+        .project({ _id: 1, name: 1, lastname: 1, email: 1, completed_tasks: 1 })
         .toArray();
       await closeConnection();
       if (result[0]) {
@@ -43,6 +43,7 @@ export class UserService {
         created_at: new Date(),
         updated_at: new Date(),
         tasks: [],
+        completed_tasks: 0,
       };
       await userCollection.insertOne(newUser);
       let result = await userCollection.find({ email: user.email }).toArray();
