@@ -50,6 +50,14 @@ taskRouter
     } catch (error) {
       res.status(400).send(error);
     }
+  })
+  .put("/complete/:id", authenticateToken, async (req: Request, res: Response) => {
+    try {
+      let response = await taskService.completeTask(res.locals.id, req.params.id);
+      response.error? res.status(400).send(response) : res.status(200).send(response);
+    } catch (error) {
+      res.status(400).send(error);
+    }
   });
 
 export default taskRouter;
